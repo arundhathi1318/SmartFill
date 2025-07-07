@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -8,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { Save, Send, Edit3, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Save, Send, Edit3, CheckCircle, AlertTriangle, RotateCcw, Upload } from 'lucide-react';
 
 const FormEditor = () => {
   const { id } = useParams();
@@ -70,6 +69,16 @@ const FormEditor = () => {
     navigate('/dashboard');
   };
 
+  const handleRescan = () => {
+    toast.info('Redirecting to rescan document...');
+    navigate('/upload');
+  };
+
+  const handleUploadNew = () => {
+    toast.info('Redirecting to upload new document...');
+    navigate('/upload');
+  };
+
   const formFields = [
     { key: 'fullName', label: 'Full Name', type: 'text' },
     { key: 'dateOfBirth', label: 'Date of Birth', type: 'text' },
@@ -97,6 +106,14 @@ const FormEditor = () => {
               </p>
             </div>
             <div className="flex space-x-3">
+              <Button variant="outline" onClick={handleRescan}>
+                <RotateCcw className="w-4 h-4 mr-2" />
+                Rescan
+              </Button>
+              <Button variant="outline" onClick={handleUploadNew}>
+                <Upload className="w-4 h-4 mr-2" />
+                New Upload
+              </Button>
               <Button variant="outline" onClick={handleSave}>
                 <Save className="w-4 h-4 mr-2" />
                 Save Draft
@@ -168,6 +185,34 @@ const FormEditor = () => {
 
           {/* Sidebar */}
           <div className="space-y-6">
+            {/* Document Actions */}
+            <Card className="border-0 shadow-lg bg-white/60 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle>Document Actions</CardTitle>
+                <CardDescription>
+                  Options for the current document
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start"
+                  onClick={handleRescan}
+                >
+                  <RotateCcw className="w-4 h-4 mr-2" />
+                  Rescan Current Document
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start"
+                  onClick={handleUploadNew}
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  Upload New Document
+                </Button>
+              </CardContent>
+            </Card>
+
             {/* Confidence Summary */}
             <Card className="border-0 shadow-lg bg-white/60 backdrop-blur-sm">
               <CardHeader>

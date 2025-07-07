@@ -1,17 +1,17 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
-import { Upload as UploadIcon, Camera, FileText, CheckCircle, AlertCircle } from 'lucide-react';
+import { Upload as UploadIcon, Camera, FileText, CheckCircle, AlertCircle, Edit3, RotateCcw } from 'lucide-react';
 
 const Upload = () => {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [isProcessed, setIsProcessed] = useState(false);
   const navigate = useNavigate();
 
   const handleFileSelect = (selectedFile: File) => {
@@ -26,6 +26,7 @@ const Upload = () => {
     }
 
     setFile(selectedFile);
+    setIsProcessed(false);
     const reader = new FileReader();
     reader.onload = (e) => {
       setPreview(e.target?.result as string);
@@ -67,10 +68,8 @@ const Upload = () => {
     }
 
     setIsProcessing(false);
+    setIsProcessed(true);
     toast.success('Document processed successfully!');
-    
-    // Navigate to form editor with mock data
-    navigate('/form-editor/1');
   };
 
   const handleProcess = () => {
@@ -79,6 +78,24 @@ const Upload = () => {
       return;
     }
     simulateOCRProcessing();
+  };
+
+  const handleRescan = () => {
+    setIsProcessed(false);
+    setProgress(0);
+    toast.info('Ready to rescan document');
+  };
+
+  const handleEditForm = () => {
+    navigate('/form-editor/1');
+  };
+
+  const handleReplaceDocument = () => {
+    setFile(null);
+    setPreview(null);
+    setIsProcessed(false);
+    setProgress(0);
+    toast.info('Please select a new document');
   };
 
   return (
@@ -118,16 +135,32 @@ const Upload = () => {
                       className="max-w-full max-h-64 mx-auto rounded-lg shadow-md"
                     />
                     <p className="text-sm text-gray-600">{file?.name}</p>
-                    <Button
-                      variant="outline"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setFile(null);
-                        setPreview(null);
-                      }}
-                    >
-                      Remove
-                    </Button>
+                    <div className="flex justify-center space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleReplaceDocument();
+                        }}
+                      >
+                        <Edit3 className="w-4 h-4 mr-1" />
+                        Replace
+                      </Button>
+                      {isProcessed && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRescan();
+                          }}
+                        >
+                          <RotateCcw className="w-4 h-4 mr-1" />
+                          Rescan
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -191,7 +224,7 @@ const Upload = () => {
                 </div>
               )}
 
-              {file && !isProcessing && (
+              {file && !isProcessing && !isProcessed && (
                 <div className="text-center py-8 space-y-4">
                   <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto">
                     <CheckCircle className="w-8 h-8 text-green-600" />
@@ -252,6 +285,36 @@ const Upload = () => {
                       <div className={`w-2 h-2 rounded-full ${progress >= 100 ? 'bg-green-500' : 'bg-gray-300'}`}></div>
                       <span className="text-gray-600">Data structuring</span>
                     </div>
+                  </div>
+                </div>
+              )}
+
+              {isProcessed && (
+                <div className="text-center py-8 space-y-4">
+                  <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto">
+                    <CheckCircle className="w-8 h-8 text-green-600" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900">Processing Complete</p>
+                    <p className="text-sm text-gray-500">
+                      Document has been analyzed and data extracted
+                    </p>
+                  </div>
+                  <div className="flex justify-center space-x-3">
+                    <Button
+                      variant="outline"
+                      onClick={handleRescan}
+                    >
+                      <RotateCcw className="w-4 h-4 mr-2" />
+                      Rescan
+                    </Button>
+                    <Button
+                      onClick={handleEditForm}
+                      className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                    >
+                      <Edit3 className="w-4 h-4 mr-2" />
+                      Edit Form
+                    </Button>
                   </div>
                 </div>
               )}
