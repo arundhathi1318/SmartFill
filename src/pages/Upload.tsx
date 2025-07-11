@@ -189,12 +189,14 @@ const Upload = () => {
                 )}
               </div>
 
+              <label htmlFor="file-input" className="sr-only">Upload document</label>
               <input
                 id="file-input"
                 type="file"
                 accept="image/*"
                 onChange={handleFileInput}
                 className="hidden"
+                title="Upload document"
               />
 
               <div className="mt-6 space-y-2 text-sm text-gray-500">
